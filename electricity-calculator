@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Electricity Price Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    input {
+      margin: 5px 0;
+      padding: 5px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 5px 10px;
+    }
+    #output {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <label for="refPrice">Reference Price ($):</label><br>
+  <input type="number" id="refPrice" value="1810"><br><br>
+
+  <label for="uncPrice">Unconditional Price ($):</label><br>
+  <input type="number" id="uncPrice" value="1700"><br><br>
+
+  <button onclick="calculate()">Calculate</button>
+
+  <p id="output"></p>
+
+  <script>
+    function calculate() {
+      const ref = parseFloat(document.getElementById("refPrice").value);
+      const unc = parseFloat(document.getElementById("uncPrice").value);
+
+      if (isNaN(ref) || isNaN(unc) || ref === 0) {
+        document.getElementById("output").innerText = "Please enter valid numbers.";
+        return;
+      }
+
+      const percentage = ((unc / ref) * 100).toFixed(2);
+      const diff = (100 - percentage).toFixed(2);
+
+      document.getElementById("output").innerText =
+        `This offer is ${percentage}% of the reference price — or ${diff}% lower.`;
+    }
+  </script>
+
+</body>
+</html>
