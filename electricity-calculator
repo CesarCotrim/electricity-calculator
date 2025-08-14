@@ -1,56 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Electricity Price Calculator</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    input {
-      margin: 5px 0;
-      padding: 5px;
-    }
-    button {
-      margin-top: 10px;
-      padding: 5px 10px;
-    }
-    #output {
-      margin-top: 15px;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Percentage Difference Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
+        h2 { color: #333; }
+        .formula { font-style: italic; margin: 10px 0; }
+        label { display: block; margin: 10px 0 5px; }
+        input, select { width: 100%; padding: 8px; box-sizing: border-box; }
+        #output { margin-top: 20px; font-weight: bold; color: #007bff; }
+    </style>
 </head>
 <body>
+    <h2>Section 2: Apply the Percentage Formula</h2>
+    <p>Use the formula below to calculate the % difference between the Unconditional Price and the Reference Price. Try different inputs to see the result update.</p>
+    <p class="formula">Percentage = (Unconditional Price / Reference Price) × 100</p>
+    
+    <label for="example">Select a pre-filled example:</label>
+    <select id="example" onchange="loadExample()">
+        <option value="">Custom</option>
+        <option value="ausgrid">Ausgrid – Res. no controlled load</option>
+        <option value="endeavour">Endeavour – Res. with controlled load</option>
+        <option value="sapower">SA Power – Small business</option>
+    </select>
+    
+    <label for="reference">Reference Price ($):</label>
+    <input type="number" id="reference" value="1810" oninput="calculate()" step="0.01">
+    
+    <label for="unconditional">Unconditional Price ($):</label>
+    <input type="number" id="unconditional" value="1700" oninput="calculate()" step="0.01">
+    
+    <div id="output"></div>
 
-  <label for="refPrice">Reference Price ($):</label><br>
-  <input type="number" id="refPrice" value="1810"><br><br>
+    <script>
+        const examples = {
+            ausgrid: { ref: 1965, unc: 1847 },
+            endeavour: { ref: 3072, unc: 2888 },
+            sapower: { ref: 5541, unc: 5209 }
+        };
 
-  <label for="uncPrice">Unconditional Price ($):</label><br>
-  <input type="number" id="uncPrice" value="1700"><br><br>
+        function loadExample() {
+            const selected = document.getElementById('example').value;
+            if (selected) {
+                document.getElementById('reference').value = examples[selected].ref;
+                document.getElementById('unconditional').value = examples[selected].unc;
+                calculate();
+            }
+        }
 
-  <button onclick="calculate()">Calculate</button>
+        function calculate() {
+            const ref = parseFloat(document.getElementById('reference').value);
+            const unc = parseFloat(document.getElementById('unconditional').value);
+            if (ref > 0 && unc >= 0) {
+                const percentage = Math.round((unc / ref) * 100);
+                const difference = 100 - percentage;
+                const direction = difference > 0 ? 'lower' : (difference < 0 ? 'higher' : 'the same as');
+                document.getElementById('output').innerText = `This offer is ${percentage}% of the reference price — or ${Math.abs(difference)}% ${direction}.`;
+            } else {
+                document.getElementById('output').innerText = '';
+            }
+        }
 
-  <p id="output"></p>
-
-  <script>
-    function calculate() {
-      const ref = parseFloat(document.getElementById("refPrice").value);
-      const unc = parseFloat(document.getElementById("uncPrice").value);
-
-      if (isNaN(ref) || isNaN(unc) || ref === 0) {
-        document.getElementById("output").innerText = "Please enter valid numbers.";
-        return;
-      }
-
-      const percentage = ((unc / ref) * 100).toFixed(2);
-      const diff = (100 - percentage).toFixed(2);
-
-      document.getElementById("output").innerText =
-        `This offer is ${percentage}% of the reference price — or ${diff}% lower.`;
-    }
-  </script>
-
+        calculate(); // Initial calculation
+    </script>
 </body>
 </html>
