@@ -4,66 +4,195 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Percentage Difference Calculator</title>
+    <!-- Tailwind CSS CDN for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
-        h2 { color: #333; }
-        .formula { font-style: italic; margin: 10px 0; }
-        label { display: block; margin: 10px 0 5px; }
-        input, select { width: 100%; padding: 8px; box-sizing: border-box; }
-        #output { margin-top: 20px; font-weight: bold; color: #007bff; }
+        /* Custom styles for the Inter font and overall aesthetics */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background-color: #ffffff;
+            padding: 32px; /* Increased padding */
+            border-radius: 16px; /* More rounded corners */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Softer shadow */
+        }
+        h2 {
+            color: #1f2937; /* Darker text for heading */
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .formula {
+            font-style: italic;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.1em;
+            color: #4b5563;
+        }
+        label {
+            display: block;
+            margin: 16px 0 8px; /* More spacing */
+            font-weight: 600; /* Slightly bolder labels */
+            color: #374151;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px; /* Larger padding for inputs */
+            box-sizing: border-box;
+            border: 1px solid #d1d5db; /* Lighter border */
+            border-radius: 8px; /* Rounded input fields */
+            font-size: 1em;
+            color: #374151;
+            transition: all 0.2s ease-in-out; /* Smooth transitions for focus */
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6; /* Blue border on focus */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* Light blue shadow on focus */
+        }
+        #output {
+            margin-top: 28px; /* More spacing above output */
+            padding: 16px;
+            background-color: #e0f2fe; /* Light blue background for output */
+            border-radius: 8px;
+            font-weight: bold;
+            color: #007bff; /* Original blue for emphasis */
+            text-align: center;
+            font-size: 1.15em;
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px;
+                margin: 10px;
+            }
+            h2 {
+                font-size: 1.75em;
+            }
+            .formula, #output {
+                font-size: 1em;
+            }
+        }
     </style>
 </head>
 <body>
-    <h2>Section 2: Apply the Percentage Formula</h2>
-    <p>Use the formula below to calculate the % difference between the Unconditional Price and the Reference Price. Try different inputs to see the result update.</p>
-    <p class="formula">Percentage = (Unconditional Price / Reference Price) × 100</p>
-    
-    <label for="example">Select a pre-filled example:</label>
-    <select id="example" onchange="loadExample()">
-        <option value="">Custom</option>
-        <option value="ausgrid">Ausgrid – Res. no controlled load</option>
-        <option value="endeavour">Endeavour – Res. with controlled load</option>
-        <option value="sapower">SA Power – Small business</option>
-    </select>
-    
-    <label for="reference">Reference Price ($):</label>
-    <input type="number" id="reference" value="1810" oninput="calculate()" step="0.01">
-    
-    <label for="unconditional">Unconditional Price ($):</label>
-    <input type="number" id="unconditional" value="1700" oninput="calculate()" step="0.01">
-    
-    <div id="output"></div>
+    <div class="container">
+        <h2>Section 2: Apply the Percentage Formula</h2>
+        <p class="text-gray-700 text-center mb-6">Use the formula below to calculate the % difference between the Unconditional Price and the Reference Price. Try different inputs to see the result update.</p>
+        
+        <p class="formula">
+            Percentage Difference = $(\frac{\text{Unconditional Price}}{\text{Reference Price}}) \times 100$
+        </p>
+        
+        <label for="example" class="mt-8">Select a pre-filled example:</label>
+        <select id="example" onchange="loadExample()" class="mb-4">
+            <option value="">Custom</option>
+            <option value="ausgrid">Ausgrid – Res. no controlled load</option>
+            <option value="endeavour">Endeavour – Res. with controlled load</option>
+            <option value="sapower">SA Power – Small business</option>
+        </select>
+        
+        <label for="reference">Reference Price ($):</label>
+        <input type="number" id="reference" value="1810" oninput="calculate()" step="0.01" class="mb-4">
+        
+        <label for="unconditional">Unconditional Price ($):</label>
+        <input type="number" id="unconditional" value="1700" oninput="calculate()" step="0.01" class="mb-4">
+        
+        <div id="output"></div>
+    </div>
 
     <script>
+        // Define the pre-filled examples with their reference and unconditional prices
         const examples = {
             ausgrid: { ref: 1965, unc: 1847 },
             endeavour: { ref: 3072, unc: 2888 },
             sapower: { ref: 5541, unc: 5209 }
         };
 
+        /**
+         * Loads the values for Reference Price and Unconditional Price based on the selected example.
+         * Triggers a recalculation after loading the example.
+         */
         function loadExample() {
             const selected = document.getElementById('example').value;
-            if (selected) {
+            if (selected && examples[selected]) { // Check if a valid example is selected
                 document.getElementById('reference').value = examples[selected].ref;
                 document.getElementById('unconditional').value = examples[selected].unc;
-                calculate();
+                calculate(); // Recalculate with new example values
+            } else if (selected === "") { // If 'Custom' is selected, clear example values and allow manual input
+                // Optionally reset to default custom values or keep current
+                // document.getElementById('reference').value = ''; 
+                // document.getElementById('unconditional').value = '';
+                calculate(); // Recalculate in case values were manually changed before selecting Custom
             }
         }
 
+        /**
+         * Calculates the percentage difference and updates the output display.
+         * Handles edge cases like zero or negative reference prices.
+         */
         function calculate() {
-            const ref = parseFloat(document.getElementById('reference').value);
-            const unc = parseFloat(document.getElementById('unconditional').value);
-            if (ref > 0 && unc >= 0) {
-                const percentage = Math.round((unc / ref) * 100);
-                const difference = 100 - percentage;
-                const direction = difference > 0 ? 'lower' : (difference < 0 ? 'higher' : 'the same as');
-                document.getElementById('output').innerText = `This offer is ${percentage}% of the reference price — or ${Math.abs(difference)}% ${direction}.`;
-            } else {
-                document.getElementById('output').innerText = '';
+            const refInput = document.getElementById('reference');
+            const uncInput = document.getElementById('unconditional');
+            const outputDiv = document.getElementById('output');
+
+            const ref = parseFloat(refInput.value);
+            const unc = parseFloat(uncInput.value);
+
+            // Validate inputs
+            if (isNaN(ref) || isNaN(unc)) {
+                outputDiv.innerText = 'Please enter valid numbers for both prices.';
+                outputDiv.classList.remove('text-blue-600', 'text-green-600', 'text-red-600');
+                outputDiv.classList.add('text-yellow-600', 'bg-yellow-50');
+                return;
             }
+
+            if (ref <= 0) {
+                outputDiv.innerText = 'Reference Price must be greater than zero.';
+                outputDiv.classList.remove('text-blue-600', 'text-green-600', 'text-red-600');
+                outputDiv.classList.add('text-red-600', 'bg-red-50');
+                return;
+            }
+
+            // Calculate percentage
+            const percentage = (unc / ref) * 100;
+            const roundedPercentage = Math.round(percentage); // Round to nearest whole number
+
+            // Calculate difference and determine direction
+            const difference = percentage - 100;
+            const absoluteDifference = Math.abs(Math.round(difference)); // Absolute difference, rounded
+
+            let direction = '';
+            let outputClass = '';
+
+            if (difference < 0) {
+                direction = 'lower';
+                outputClass = 'text-red-600 bg-red-50'; // Red for lower
+            } else if (difference > 0) {
+                direction = 'higher';
+                outputClass = 'text-green-600 bg-green-50'; // Green for higher
+            } else {
+                direction = 'the same as';
+                outputClass = 'text-blue-600 bg-blue-50'; // Blue for same
+            }
+
+            // Update output display
+            outputDiv.innerText = `This offer is ${roundedPercentage}% of the reference price — or ${absoluteDifference}% ${direction}.`;
+            // Reset previous classes and apply new ones
+            outputDiv.className = 'mt-28 p-16 rounded-lg font-bold text-center text-xl ' + outputClass;
         }
 
-        calculate(); // Initial calculation
+        // Initial calculation when the page loads
+        document.addEventListener('DOMContentLoaded', calculate);
     </script>
 </body>
 </html>
